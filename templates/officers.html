@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Officers | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{background:#020b02;color:#00ff99;font-family:'Orbitron',sans-serif;margin:0}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:rgba(0,20,0,.9);border-bottom:1px solid #00ff99}
+    .logo{color:#00ff66}.logo span{color:#00ffaa}
+    nav a{color:#00ff99;text-decoration:none;margin-left:16px}
+    nav a:hover,nav a.active{color:#00ffaa;text-shadow:0 0 8px #00ffaa}
+    .container{padding:1.5rem 2rem}
+    .search-panel{background:rgba(0,40,40,.8);border:1px solid #00ffaa;border-radius:10px;padding:12px;margin-bottom:18px}
+    .search-form{display:flex;gap:12px;flex-wrap:wrap}
+    .search-field{display:flex;flex-direction:column;min-width:200px}
+    .search-field input{background:#000;color:#00ff99;border:1px solid #00ff99;border-radius:6px;padding:8px}
+    .btn-search,.btn-clear{background:#00ffaa;color:#003;border:none;border-radius:6px;padding:10px 14px;cursor:pointer;font-weight:700}
+    .btn-clear{background:#033; color:#00ffaa; border:1px solid #00ffaa; text-decoration:none; display:inline-block}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .card{background:rgba(0,30,0,.85);border:1px solid #00ff66;border-radius:12px;padding:16px}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .rank{color:#00ffaa}
+    .actions{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+    .btn{background:#00ffaa;color:#003;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
+    .btn.ghost{background:#033;color:#00ffaa;border:1px solid #00ffaa}
+    .btn.delete{background:#ff6666;color:#120000}
+    /* Make sure buttons are clickable */
+    button, a.btn {position:relative; z-index:1}
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .panel{background:#001a1a;border:1px solid #00ffaa;border-radius:12px;max-width:720px;width:100%;padding:18px}
+    .panel h3{margin:0 0 12px;color:#00ffaa}
+    .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .panel input,.panel select{background:#000;color:#00ff99;border:1px solid #00ff99;border-radius:6px;padding:8px;width:100%}
+    .panel .footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+    .flash-container{margin:12px 0}
+    .flash-message{padding:10px;border-radius:8px;margin-bottom:8px}
+    .flash-message.success{background:rgba(0,255,170,.1);border:1px solid #00ffaa}
+    .flash-message.error{background:rgba(255,0,0,.08);border:1px solid #ff6666}
+
+        .modal {
+      z-index: 9999 !important;
+    }
+
+    .modal .panel {
+      position: relative;
+      z-index: 10000 !important;
+    }
+    .modal {
+  pointer-events: auto;
+}
+
+body.modal-open *:not(.modal):not(.modal *) {
+  pointer-events: none;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="logo">⚡ POLICE <span>CYBER COMMAND</span></h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/officers" class="active">Officers</a>
+      <a href="/cases">Cases</a>
+      <a href="/criminals">Criminals</a>
+      <a href="/departments">Departments</a>
+      <a href="/stations">Stations</a>
+      <a href="/court">Court</a>
+      <a href="/evidence">Evidence</a>
+      <a href="/dashboard">Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="search-panel">
+      <form method="get" action="{{ url_for('officers_page') }}" class="search-form">
+        <div class="search-field">
+          <label>Department ID</label>
+          <input type="text" name="dept_id" value="{{ request.args.get('dept_id','') }}" placeholder="e.g. 1">
+        </div>
+        <div class="search-field">
+          <label>Department Type</label>
+          <input type="text" name="dept_type" value="{{ request.args.get('dept_type','') }}" placeholder="e.g. Forensics">
+        </div>
+        <div class="search-field">
+          <label>Department Head</label>
+          <input type="text" name="dept_head" value="{{ request.args.get('dept_head','') }}" placeholder="Name">
+        </div>
+        <div class="search-field" style="align-self:end">
+          <button class="btn-search" type="submit">Search</button>
+          <a class="btn-clear" href="{{ url_for('officers_page') }}">Clear</a>
+        </div>
+      </form>
+    </div>
+
+    <p style="margin:8px 0"><a class="btn" href="{{ url_for('add_officer') }}">+ Add Officer</a></p>
+
+    <div class="grid">
+      {% for o in officers %}
+      <div class="card">
+        <div class="card-header">
+          <h3 style="margin:0">{{ o.PoliceName }}</h3>
+          <span class="rank">{{ o.Ranking }}</span>
+        </div>
+
+        <div class="actions">
+          <button class="btn ghost view-cases-btn"
+                  data-officer-id="{{ o.PoliceID }}">
+            View Cases
+          </button>
+          <!-- EDIT opens modal and posts to /edit_officer/<id> -->
+          <button class="btn ghost edit-btn"
+                  data-id="{{ o.PoliceID }}"
+                  data-name="{{ o.PoliceName }}"
+                  data-rank="{{ o.Ranking }}"
+                  data-email="{{ o.Email }}"
+                  data-phone="{{ o.PhoneNumber }}"
+                  data-age="{{ o.Age }}"
+                  data-salary="{{ o.Salary }}"
+                  data-deptid="{{ o.Dept_ID }}"
+                  data-dob="{{ o.Date_of_Birth|ymd }}">
+            Edit
+          </button>
+
+          <!-- DELETE uses a real POST form with a visible submit -->
+          <form action="{{ url_for('delete_officer', police_id=o.PoliceID) }}" method="POST" style="display:inline-block">
+            <button type="submit" class="btn delete" onclick="return confirm('Delete this officer?')">Delete</button>
+          </form>
+        </div>
+
+        <p><strong>ID:</strong> {{ o.PoliceID }}</p>
+        <p><strong>Department:</strong> {{ o.DepartmentName or '—' }}</p>
+        <p><strong style="color:#00ffaa">Cases Assigned:</strong> {{ o.CaseCount }}</p>
+        <p><strong>Email:</strong> {{ o.Email }}</p>
+        <p><strong>Phone:</strong> {{ o.PhoneNumber }}</p>
+        <p><strong>Age:</strong> {{ o.Age }}</p>
+        <p><strong>Salary:</strong> ₹{{ o.Salary }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+
+  <!-- EDIT MODAL -->
+  <div id="editModal" class="modal" aria-hidden="true">
+    <div class="panel">
+      <h3>Edit Officer</h3>
+      <form id="editForm" method="POST">
+        <div class="grid2">
+          <label>Name <input name="name" id="f_name" required></label>
+          <label>Rank <input name="rank" id="f_rank" required></label>
+          <label>Email <input type="email" name="email" id="f_email" required></label>
+          <label>Phone <input name="phone" id="f_phone" required></label>
+          <label>Age (18–55) <input type="number" min="18" max="55" name="age" id="f_age" required></label>
+          <label>Salary <input type="number" step="0.01" name="salary" id="f_salary" required></label>
+          <label>Department
+            <select name="dept_id" id="f_dept" required>
+              {% for d in departments %}
+                <option value="{{ d.Dept_ID }}">{{ d.DepartmentType }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label>Date of Birth
+            <input type="date" name="dob" id="f_dob">
+          </label>
+        </div>
+        <div class="footer">
+          <button type="button" class="btn ghost" id="closeModal">Cancel</button>
+          <button type="submit" class="btn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- VIEW CASES MODAL (Only ONE instance!) -->
+<div id="casesModal" class="modal" aria-hidden="true">
+  <div class="panel">
+    <h3>Cases Handled</h3>
+
+    <div id="casesList" style="max-height:300px; overflow-y:auto; margin-bottom:15px;">
+      <!-- JavaScript fills this -->
+    </div>
+
+    <div class="footer">
+      <button type="button" class="btn ghost" id="closeCasesModal">Close</button>
+    </div>
+  </div>
+</div>
+
+
+
+  <script>
+    const modal = document.getElementById('editModal');
+    const closeBtn = document.getElementById('closeModal');
+    const form = document.getElementById('editForm');
+
+    document.querySelectorAll('.edit-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        // fill
+        document.getElementById('f_name').value   = btn.dataset.name || '';
+        document.getElementById('f_rank').value   = btn.dataset.rank || '';
+        document.getElementById('f_email').value  = btn.dataset.email || '';
+        document.getElementById('f_phone').value  = btn.dataset.phone || '';
+        document.getElementById('f_age').value    = btn.dataset.age || '';
+        document.getElementById('f_salary').value = btn.dataset.salary || '';
+        document.getElementById('f_dept').value   = btn.dataset.deptid || '';
+        document.getElementById('f_dob').value    = btn.dataset.dob || '';
+        // action
+        form.action = '/edit_officer/' + btn.dataset.id;
+        // show
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+      });
+    });
+
+    closeBtn.addEventListener('click', ()=>{
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    });
+
+    // close on backdrop click
+    modal.addEventListener('click', (e)=>{
+      if(e.target === modal){ closeBtn.click(); }
+    });
+
+        // VIEW CASES MODAL ---------------------------------------
+    const casesModal = document.getElementById('casesModal');
+    const casesClose = document.getElementById('closeCasesModal');
+    const casesList = document.getElementById('casesList');
+
+    // data from Python
+    const allCases = {{ all_cases | tojson }};
+
+    document.querySelectorAll('.view-cases-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const officerID = btn.dataset.officerId;
+
+        // filter cases
+        const filtered = allCases.filter(c => c.AssignedOfficer_ID == officerID);
+
+        // show data
+        if (filtered.length === 0) {
+          casesList.innerHTML = `<p style="color:#00ffaa;">No cases assigned.</p>`;
+        } else {
+          casesList.innerHTML = filtered.map(c => `
+            <div style="border:1px solid #00ffaa; padding:10px; margin-bottom:10px; border-radius:8px;">
+              <strong>Case #${c.CaseID}</strong> — ${c.CaseType}<br>
+              Stage: ${c.Stage}<br>
+              Verdict: ${c.Verdict}<br>
+              Progress: ${c.ProgressPercentage}%
+            </div>
+          `).join("");
+        }
+
+        // show modal
+        casesModal.classList.add('open');
+        casesModal.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    // Close modal
+    casesClose.addEventListener('click', () => {
+      casesModal.classList.remove('open');
+      casesModal.setAttribute('aria-hidden','true');
+    });
+
+    // Close on background click
+    casesModal.addEventListener('click', e => {
+      if (e.target === casesModal) casesClose.click();
+    });
+
+  </script>
+</body>
+</html>

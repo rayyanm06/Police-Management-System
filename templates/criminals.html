@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Criminals | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{background:#020b02;color:#00ff99;font-family:'Orbitron',sans-serif;margin:0}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:rgba(0,20,0,.9);border-bottom:1px solid #00ff99}
+    .logo{color:#00ff66}.logo span{color:#00ffaa}
+    nav a{color:#00ff99;margin-left:16px;text-decoration:none}
+    nav a:hover,nav a.active{color:#00ffaa;text-shadow:0 0 8px #00ffaa}
+    .container{padding:1.5rem 2rem}
+    .stats{background:rgba(0,40,40,.8);border:1px solid #00ffaa;border-radius:10px;padding:10px;margin-bottom:16px;text-align:center}
+    .search-panel{background:rgba(0,40,40,.8);border:1px solid #00ffaa;border-radius:10px;padding:12px;margin-bottom:18px}
+    .search-form{display:flex;gap:12px;flex-wrap:wrap}
+    .search-field{display:flex;flex-direction:column;min-width:200px}
+    .search-field input, .search-field select{background:#000;color:#00ff99;border:1px solid #00ff99;border-radius:6px;padding:8px}
+    .btn{background:#00ffaa;color:#002;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
+    .btn-clear{background:#033;color:#00ffaa;border:1px solid #00ffaa;text-decoration:none;display:inline-block}
+    .btn.delete{background:#ff6666;color:#120000}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .card{background:rgba(0,30,0,.85);border:1px solid #00ff66;border-radius:12px;padding:16px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    button, a.btn {position:relative; z-index:1}
+    .flash-container{margin:12px 0}
+    .flash-message{padding:10px;border-radius:8px;margin-bottom:8px}
+    .flash-message.success{background:rgba(0,255,170,.1);border:1px solid #00ffaa}
+    .flash-message.error{background:rgba(255,0,0,.08);border:1px solid #ff6666}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="logo">⚡ POLICE <span>CYBER COMMAND</span></h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/officers">Officers</a>
+      <a href="/cases">Cases</a>
+      <a href="/criminals" class="active">Criminals</a>
+      <a href="/departments">Departments</a>
+      <a href="/stations">Stations</a>
+      <a href="/court">Court</a>
+      <a href="/evidence">Evidence</a>
+      <a href="/dashboard">Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="stats">
+      👥 Total: {{ total_criminals }} &nbsp; ♂️ Male: {{ male }} &nbsp; ♀️ Female: {{ female }} &nbsp; 📊 Avg Age: {{ avg_age }}
+    </div>
+
+    <p><a class="btn" href="{{ url_for('add_criminal') }}">+ Add Criminal</a></p>
+
+    <div class="search-panel">
+      <form method="get" action="{{ url_for('criminals_page') }}" class="search-form">
+        <div class="search-field">
+          <label>Name</label>
+          <input name="name" value="{{ request.args.get('name','') }}" placeholder="Criminal name">
+        </div>
+        <div class="search-field">
+          <label>Gender</label>
+          <select name="gender">
+            <option value="">All</option>
+            <option value="M" {% if request.args.get('gender')=='M' %}selected{% endif %}>Male</option>
+            <option value="F" {% if request.args.get('gender')=='F' %}selected{% endif %}>Female</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label>Case ID</label>
+          <input name="case" value="{{ request.args.get('case','') }}" placeholder="Case ID">
+        </div>
+        <div class="search-field" style="align-self:end">
+          <button class="btn" type="submit">Search</button>
+          <a class="btn-clear" href="{{ url_for('criminals_page') }}">Clear</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="grid">
+      {% for c in criminals %}
+      <div class="card">
+        <div class="actions">
+          <a class="btn" href="{{ url_for('edit_criminal', cid=c.Criminal_ID) }}">Edit</a>
+          <form action="{{ url_for('delete_criminal', cid=c.Criminal_ID) }}" method="POST" style="display:inline-block">
+            <button type="submit" class="btn delete" onclick="return confirm('Delete this record?')">Delete</button>
+          </form>
+        </div>
+        <h3>{{ c.Name_ }}</h3>
+        <p><strong>ID:</strong> {{ c.Criminal_ID }}</p>
+        <p><strong>Case:</strong> {{ c.CaseType or 'Unlinked' }}</p>
+        <p><strong>Gender:</strong> {{ c.Gender }}</p>
+        <p><strong>Age:</strong> {{ c.Age }}</p>
+        <p><strong>Address:</strong> {{ c.Address }}</p>
+        <p><strong>Record:</strong> {{ c.CriminalRecord }}</p>
+        <p><strong>Trial Duration:</strong> {{ c.TrialDuration }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </main>
+</body>
+</html>

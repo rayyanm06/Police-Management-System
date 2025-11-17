@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Evidence for Case #{{ case.CaseID }} | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{background:#020b02;color:#00ff99;font-family:'Orbitron',sans-serif;margin:0}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:rgba(0,20,0,.9);border-bottom:1px solid #00ff99}
+    .logo{color:#00ff66}.logo span{color:#00ffaa}
+    nav a{color:#00ff99;margin-left:16px;text-decoration:none}
+    nav a:hover,nav a.active{color:#00ffaa;text-shadow:0 0 8px #00ffaa}
+    .container{padding:1.5rem 2rem}
+    .back{display:inline-block;background:#00ffaa;color:#002;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:16px}
+    .card{background:rgba(0,30,0,.85);border:1px solid #00ff66;border-radius:12px;padding:16px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="logo">⚡ POLICE <span>CYBER COMMAND</span></h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/cases" class="active">Cases</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a class="back" href="{{ url_for('cases_page') }}">← Back to Cases</a>
+    <h2 style="text-align:center;color:#00ffaa">Evidence for Case #{{ case.CaseID }} — {{ case.CaseType }}</h2>
+    <p style="text-align:center;color:#aaffcc">{{ case.Description_Of_Case }}</p>
+
+    {% if evidence %}
+      <div class="grid">
+        {% for e in evidence %}
+        <div class="card">
+          <h3 style="color:#00ffaa;margin:0 0 8px">{{ e.EvidenceType }}</h3>
+          <p><strong>Collected By:</strong> {{ e.CollectedBy or 'Unknown' }}</p>
+          <p><strong>Date:</strong> {{ e.DateCollected }}</p>
+          <p><strong>Storage:</strong> {{ e.StorageLocation }}</p>
+          <p><strong>Description:</strong> {{ e.Description or 'No details provided' }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="text-align:center;color:#ff8888">No evidence linked to this case yet.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

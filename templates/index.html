@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Police Management System | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    /* Additional cyber theme styling for home */
+    body {
+      background-color: #020b02;
+      color: #00ff66;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* Navbar matching other pages */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      background: rgba(0, 20, 0, 0.95);
+      border-bottom: 2px solid #00ff66;
+      box-shadow: 0 0 20px #00ff66;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      color: #00ff66;
+      font-size: 1.8rem;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 15px #00ff66;
+      font-weight: 700;
+    }
+
+    .logo span {
+      color: #00ffaa;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      color: #00ff66;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+    }
+
+    nav a:hover, nav a.active {
+      color: #00ffaa;
+      background: rgba(0, 255, 170, 0.1);
+      text-shadow: 0 0 12px #00ffaa;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, rgba(0, 30, 0, 0.8), rgba(0, 50, 0, 0.6));
+      border-bottom: 2px solid #00ff66;
+      box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      color: #00ffaa;
+      text-shadow: 0 0 20px #00ff66;
+      margin-bottom: 15px;
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 20px #00ff66; }
+      50% { text-shadow: 0 0 30px #00ffaa, 0 0 40px #00ff99; }
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #aaffcc;
+      max-width: 700px;
+      margin: 0 auto 30px;
+    }
+
+    /* Stats Grid */
+    .stats-section {
+      padding: 50px 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .stat-card {
+      background: rgba(0, 40, 40, 0.8);
+      border: 2px solid #00ff66;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0,255,170,0.1) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 45px rgba(0, 255, 170, 0.6);
+      border-color: #00ffaa;
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 10px #00ffaa);
+    }
+
+    .stat-card h3 {
+      color: #00ffaa;
+      font-size: 1.1rem;
+      margin: 10px 0;
+      text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+    }
+
+    .stat-card p {
+      font-size: 2.5rem;
+      color: #00ff66;
+      font-weight: 700;
+      margin: 10px 0;
+      text-shadow: 0 0 15px #00ff66;
+    }
+
+    /* Quick Access Cards */
+    .quick-access {
+      padding: 30px 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .quick-access h2 {
+      text-align: center;
+      font-size: 2rem;
+      color: #00ffaa;
+      margin-bottom: 40px;
+      text-shadow: 0 0 15px #00ff66;
+    }
+
+    .access-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .access-card {
+      background: rgba(0, 30, 0, 0.85);
+      border: 2px solid #00ff66;
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(0, 255, 102, 0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+    }
+
+    .access-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 40px rgba(0, 255, 170, 0.6);
+      border-color: #00ffaa;
+    }
+
+    .access-icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 10px #00ffaa);
+    }
+
+    .access-card h3 {
+      color: #00ffaa;
+      font-size: 1.4rem;
+      margin: 15px 0;
+      text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+    }
+
+    .access-card p {
+      color: #aaffcc;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Recent Activity Table */
+    .recent-section {
+      padding: 50px 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .recent-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      color: #00ffaa;
+      margin-bottom: 30px;
+      text-shadow: 0 0 15px #00ff66;
+    }
+
+    .table-container {
+      background: rgba(0, 30, 0, 0.85);
+      border: 2px solid #00ff66;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 102, 0.3);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: rgba(0, 50, 0, 0.8);
+      color: #00ffaa;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+      border-bottom: 2px solid #00ff66;
+    }
+
+    tbody td {
+      padding: 12px 15px;
+      color: #aaffcc;
+      border-bottom: 1px solid rgba(0, 255, 102, 0.2);
+    }
+
+    tbody tr:hover {
+      background: rgba(0, 255, 170, 0.1);
+    }
+
+    .status {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status.active {
+      background: rgba(0, 255, 170, 0.2);
+      color: #00ffaa;
+      border: 1px solid #00ffaa;
+    }
+
+    .status.closed {
+      background: rgba(255, 90, 90, 0.2);
+      color: #ff9999;
+      border: 1px solid #ff5a5a;
+    }
+
+    .status.pending {
+      background: rgba(255, 200, 0, 0.2);
+      color: #ffd700;
+      border: 1px solid #ffc800;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+      }
+
+      nav a {
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .stats-grid, .access-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <h1 class="logo">⚡ POLICE <span>CYBER COMMAND</span></h1>
+    
+    <nav>
+      <a href="/" class="active">Home</a>
+      <a href="/officers">Officers</a>
+      <a href="/cases">Cases</a>
+      <a href="/criminals">Criminals</a>
+      <a href="/departments">Departments</a>
+      <a href="/stations">Stations</a>
+      <a href="/court">Court</a>
+      <a href="/evidence">Evidence</a>
+      <a href="/dashboard">Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <h1>🚔 Police Management System</h1>
+    <p>Comprehensive Management System for Law Enforcement Operations</p>
+  </section>
+
+  <!-- STATISTICS -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👮</div>
+        <h3>Total Officers</h3>
+        <p>{{ total_police }}</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📂</div>
+        <h3>Active Cases</h3>
+        <p>{{ total_cases }}</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⚖️</div>
+        <h3>Criminals</h3>
+        <p>{{ total_criminals or 0 }}</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🏢</div>
+        <h3>Departments</h3>
+        <p>{{ total_departments or 0 }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK ACCESS -->
+  <section class="quick-access">
+    <h2>🔗 Quick Access</h2>
+    <div class="access-grid">
+      <a href="/officers" class="access-card">
+        <div class="access-icon">👮</div>
+        <h3>Officers</h3>
+        <p>Manage officer records, rankings, and assignments</p>
+      </a>
+
+      <a href="/cases" class="access-card">
+        <div class="access-icon">📋</div>
+        <h3>Cases</h3>
+        <p>Track case progress, verdicts, and status</p>
+      </a>
+
+      <a href="/criminals" class="access-card">
+        <div class="access-icon">⚖️</div>
+        <h3>Criminals</h3>
+        <p>Criminal records and trial information</p>
+      </a>
+
+      <a href="/departments" class="access-card">
+        <div class="access-icon">🏢</div>
+        <h3>Departments</h3>
+        <p>Department types, heads, and information</p>
+      </a>
+
+      <a href="/stations" class="access-card">
+        <div class="access-icon">🏛️</div>
+        <h3>Stations</h3>
+        <p>Police stations across regions</p>
+      </a>
+
+      <a href="/court" class="access-card">
+        <div class="access-icon">⚖️</div>
+        <h3>Court</h3>
+        <p>Court proceedings and verdicts</p>
+      </a>
+
+      <a href="/evidence" class="access-card">
+        <div class="access-icon">🔍</div>
+        <h3>Evidence</h3>
+        <p>Evidence collection and case linkage</p>
+      </a>
+
+      <a href="/dashboard" class="access-card">
+        <div class="access-icon">📊</div>
+        <h3>Dashboard</h3>
+        <p>Comprehensive system overview</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- RECENT CASES -->
+  <section class="recent-section">
+    <h2>📌 Recent Cases</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Case Type</th>
+            <th>Officer</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if recent_cases %}
+            {% for case in recent_cases %}
+            <tr>
+              <td>#{{ case.CaseID }}</td>
+              <td>{{ case.CaseType or "Unknown" }}</td>
+              <td>{{ case.Officer if case.Officer else "Unassigned" }}</td>
+              <td>
+                {% if case.Stage and case.Stage.lower() == "active" %}
+                  <span class="status active">Active</span>
+                {% elif case.Stage and case.Stage.lower() == "closed" %}
+                  <span class="status closed">Closed</span>
+                {% else %}
+                  <span class="status pending">Pending</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" style="text-align:center; color:#ff9999;">No recent cases found</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</body>
+</html>

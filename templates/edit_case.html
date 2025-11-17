@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Case | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body{background:#001a1a;color:#00ff99;font-family:'Orbitron',sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:60px 0;margin:0}
+    form{background:rgba(0,40,40,.85);padding:28px;border-radius:12px;box-shadow:0 0 25px #00ff99;width:520px}
+    h2{text-align:center;margin:0 0 16px;color:#00ffaa}
+    label{display:block;margin:8px 0 6px}
+    input,select,textarea{width:100%;margin-bottom:12px;padding:10px;background:#000;color:#00ff99;border:1px solid #00ffaa;border-radius:6px}
+    button{width:100%;padding:10px;border:none;border-radius:6px;background:#00ff99;color:#002;font-weight:700;cursor:pointer}
+    a{display:block;text-align:center;margin-top:12px;color:#00ffaa;text-decoration:none}
+  </style>
+</head>
+<body>
+  <form method="POST">
+    <h2>Edit Case #{{ case.CaseID }}</h2>
+    <label>Case Type</label>
+    <input name="case_type" value="{{ case.CaseType }}" required>
+    <label>Description</label>
+    <textarea name="description" rows="3">{{ case.Description_Of_Case }}</textarea>
+    <label>Date Reported</label>
+    <input type="date" name="date_reported" value="{{ case.DateReported|ymd }}" required>
+    <label>Progress (%)</label>
+    <input type="number" step="0.01" name="progress" min="0" max="100" value="{{ case.ProgressPercentage }}">
+    <label>Verdict</label>
+    <input name="verdict" value="{{ case.Verdict }}">
+    <label>Stage</label>
+    <input name="stage" value="{{ case.Stage }}">
+    <label>Assigned Officer</label>
+    <select name="assigned_officer">
+      <option value="">-- Select Officer --</option>
+      {% for o in officers %}
+        <option value="{{ o.PoliceID }}" {% if o.PoliceID == case.AssignedOfficer_ID %}selected{% endif %}>{{ o.PoliceName }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Save Changes</button>
+    <a href="{{ url_for('cases_page') }}">← Back to Cases</a>
+  </form>
+</body>
+</html>

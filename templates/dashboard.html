@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #020b02;
+      color: #00ff99;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 20, 0, 0.9);
+      border-bottom: 1px solid #00ff99;
+      box-shadow: 0 0 15px #00ff66;
+    }
+
+    .logo {
+      color: #00ff66;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+    .logo span { color: #00ffaa; }
+
+    nav a {
+      color: #00ff99;
+      text-decoration: none;
+      margin-left: 20px;
+      transition: 0.3s;
+    }
+    nav a:hover, nav a.active {
+      color: #00ffaa;
+      text-shadow: 0 0 10px #00ffaa;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 25px 0;
+      background: rgba(0, 40, 40, 0.85);
+      border: 1px solid #00ffaa;
+      box-shadow: 0 0 20px #00ff99;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat-item {
+      font-size: 1.1rem;
+      color: #00ffaa;
+      text-shadow: 0 0 10px #00ffaa;
+    }
+
+    .table-container {
+      width: 95%;
+      margin: 0 auto;
+      background: rgba(0, 30, 0, 0.8);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 25px #00ff66;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #aaffcc;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(0,255,120,0.2);
+    }
+
+    th {
+      color: #00ffaa;
+      text-shadow: 0 0 10px #00ffaa;
+      background: rgba(0, 50, 0, 0.7);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    tr:hover {
+      background-color: rgba(0, 255, 120, 0.05);
+      box-shadow: 0 0 10px rgba(0,255,120,0.2);
+    }
+
+    .progress {
+      height: 6px;
+      border-radius: 4px;
+      background: rgba(0,255,120,0.15);
+      overflow: hidden;
+      margin-top: 3px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff99, #00ffaa);
+    }
+
+    h2 {
+      text-align: center;
+      margin: 25px 0;
+      text-shadow: 0 0 12px #00ff66;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1 class="logo">⚡ POLICE <span>CYBER COMMAND</span></h1>
+    <nav>
+  <a href="/">Home</a>
+  <a href="/officers">Officers</a>
+  <a href="/cases">Cases</a>
+  <a href="/criminals">Criminals</a>
+  <a href="/departments">Departments</a>
+  <a href="/stations">Stations</a>
+  <a href="/court">Court</a>
+  <a href="/evidence">Evidence</a>
+  <a href="/dashboard">Dashboard</a>
+</nav>
+  </header>
+
+  <section class="stats">
+    <div class="stat-item">📂 Total Cases: {{ total_cases }}</div>
+    <div class="stat-item">👥 Total Criminals: {{ total_criminals }}</div>
+    <div class="stat-item">👮 Officers: {{ total_officers }}</div>
+    <div class="stat-item">📊 Avg Progress: {{ avg_progress }}%</div>
+  </section>
+
+  <main>
+    <h2>Criminal Case Summary</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Case Type</th>
+            <th>Criminal</th>
+            <th>Officer</th>
+            <th>Department</th>
+            <th>Stage</th>
+            <th>Verdict</th>
+            <th>Progress</th>
+            <th>Court</th>
+            <th>Judge</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in summary %}
+          <tr>
+            <td>{{ row.CaseID }}</td>
+            <td>{{ row.CaseType }}</td>
+            <td>{{ row.CriminalName or '—' }}</td>
+            <td>{{ row.AssignedOfficer or '—' }}</td>
+            <td>{{ row.Department or '—' }}</td>
+            <td>{{ row.Stage or '—' }}</td>
+            <td>{{ row.Verdict or '—' }}</td>
+            <td>
+              <div class="progress">
+                <div class="progress-bar" style="width: {{ row.ProgressPercentage or 0 }}%;"></div>
+              </div>
+            </td>
+            <td>{{ row.CourtName or '—' }}</td>
+            <td>{{ row.JudgeName or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

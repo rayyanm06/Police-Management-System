@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Evidence | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{background:#020b02;color:#00ff99;font-family:'Orbitron',sans-serif;margin:0}
+    header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:rgba(0,20,0,.9);border-bottom:1px solid #00ff99}
+    .logo{color:#00ff66}.logo span{color:#00ffaa}
+    nav a{color:#00ff99;margin-left:16px;text-decoration:none}
+    nav a:hover,nav a.active{color:#00ffaa;text-shadow:0 0 8px #00ffaa}
+    .container{padding:1.5rem 2rem}
+    .page-title{text-align:center;font-size:1.8rem;color:#00ffaa;margin-bottom:12px}
+    .search-panel,.summary{background:rgba(0,40,40,.85);border:1px solid #00ffaa;border-radius:10px;padding:12px;margin-bottom:18px}
+    .search-form{display:flex;gap:12px;flex-wrap:wrap}
+    .search-field{display:flex;flex-direction:column;min-width:200px}
+    .search-field input{background:#000;color:#00ff99;border:1px solid #00ff99;border-radius:6px;padding:8px}
+    .btn{background:#00ffaa;color:#002;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
+    .btn-clear{background:#033;color:#00ffaa;border:1px solid #00ffaa;text-decoration:none;display:inline-block}
+    .stats{display:flex;gap:16px;justify-content:space-around;background:rgba(0,40,40,.85);border:1px solid #00ffaa;border-radius:10px;padding:12px;margin-bottom:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .card{background:rgba(0,30,0,.85);border:1px solid #00ff66;border-radius:12px;padding:16px}
+    table{width:100%;border-collapse:collapse;color:#aaffcc}
+    th,td{padding:10px;border-bottom:1px solid rgba(0,255,120,.2);text-align:left}
+    th{color:#00ffaa;background:rgba(0,50,0,.7)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="logo">⚡ POLICE <span>CYBER COMMAND</span></h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/officers">Officers</a>
+      <a href="/cases">Cases</a>
+      <a href="/criminals">Criminals</a>
+      <a href="/departments">Departments</a>
+      <a href="/stations">Stations</a>
+      <a href="/court">Court</a>
+      <a href="/evidence" class="active">Evidence</a>
+      <a href="/dashboard">Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2 class="page-title">Evidence Management Center</h2>
+
+    <div class="search-panel">
+      <form method="get" action="{{ url_for('evidence_page') }}" class="search-form">
+        <div class="search-field"><label>Evidence Type</label><input name="type" value="{{ request.args.get('type','') }}"></div>
+        <div class="search-field"><label>Collected By</label><input name="officer" value="{{ request.args.get('officer','') }}"></div>
+        <div class="search-field"><label>Case ID</label><input name="case" value="{{ request.args.get('case','') }}"></div>
+        <div class="search-field" style="align-self:end">
+          <button class="btn" type="submit">Search</button>
+          <a class="btn-clear" href="{{ url_for('evidence_page') }}">Clear</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="stats">
+      <div>🧾 Total Evidence: {{ stats.total }}</div>
+      <div>📅 Avg Age: {{ stats.avg_age|round(1) }} days</div>
+    </div>
+
+    <div class="grid">
+      {% for e in evidences %}
+      <div class="card">
+        <h3 style="color:#00ffaa;margin:0 0 8px">{{ e.EvidenceType }}</h3>
+        <p><strong>Case:</strong> {{ e.CaseType }}</p>
+        <p><strong>Description:</strong> {{ e.Description }}</p>
+        <p><strong>Collected By:</strong> {{ e.CollectedBy or 'Unknown' }}</p>
+        <p><strong>Location:</strong> {{ e.StorageLocation }}</p>
+        <p><strong>Date Collected:</strong> {{ e.DateCollected }}</p>
+        <p><strong>Days Old:</strong> {{ e.DaysOld }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="summary" style="margin-top:22px">
+      <h3 style="text-align:center;color:#00ffaa;margin-top:0">📊 Evidence Summary by Case</h3>
+      <table>
+        <tr><th>Case Type</th><th>Total Evidence</th></tr>
+        {% for s in evidence_summary %}
+        <tr><td>{{ s.CaseType }}</td><td>{{ s.TotalEvidence }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </main>
+</body>
+</html>

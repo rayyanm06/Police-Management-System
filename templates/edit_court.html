@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Court Proceeding | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Orbitron',sans-serif;background:#001f1f;color:#00ff99;margin:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:60px 0}
+    form{background:rgba(0,50,50,.8);padding:30px;border-radius:12px;box-shadow:0 0 25px #00ff99;width:520px}
+    h2{text-align:center;color:#00ffaa;margin:0 0 16px}
+    label{display:block;margin-bottom:6px;color:#00ffaa}
+    input,select,textarea{width:100%;margin-bottom:12px;padding:10px;background:#000;color:#00ff99;border:1px solid #00ff99;border-radius:8px}
+    button{width:100%;padding:12px;border:none;border-radius:8px;background:#00ffaa;color:#002;font-weight:700;cursor:pointer}
+    a{display:block;text-align:center;margin-top:10px;color:#00ffaa;text-decoration:none}
+  </style>
+</head>
+<body>
+  <form method="POST">
+    <h2>EDIT COURT PROCEEDING #{{ proc.ProceedingID }}</h2>
+
+    <label>Case</label>
+    <select name="CaseID">
+      <option value="">— None —</option>
+      {% for c in cases %}
+        <option value="{{ c.CaseID }}" {% if c.CaseID == proc.CaseID %}selected{% endif %}>{{ c.CaseID }} - {{ c.CaseType }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Proceeding Date</label>
+    <input type="date" name="ProceedingDate" value="{{ proc.ProceedingDate|ymd }}" required>
+
+    <label>Court Name</label><input name="CourtName" value="{{ proc.CourtName }}" required>
+    <label>Judge Name</label><input name="JudgeName" value="{{ proc.JudgeName }}" required>
+
+    <label>Proceeding Type</label>
+    <select name="ProceedingType" required>
+      {% set t = proc.ProceedingType %}
+      {% for item in ['Preliminary Hearing','Witness Examination','Final Verdict','Verdict Review','Document Verification','Threat Assessment','Other'] %}
+        <option value="{{ item }}" {% if item==t %}selected{% endif %}>{{ item }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Officer</label>
+    <select name="PoliceID">
+      <option value="">— None —</option>
+      {% for o in officers %}
+        <option value="{{ o.PoliceID }}" {% if o.PoliceID == proc.PoliceID %}selected{% endif %}>{{ o.PoliceName }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Remarks</label><textarea name="Remarks" rows="3">{{ proc.Remarks }}</textarea>
+
+    <button type="submit">Save Changes</button>
+    <a href="{{ url_for('court_page') }}">← Back to Court</a>
+  </form>
+</body>
+</html>

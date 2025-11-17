@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Station | Cyber Command</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Orbitron',sans-serif;background:#001f1f;color:#00ff99;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+    form{background:rgba(0,40,40,.9);padding:28px;border-radius:12px;box-shadow:0 0 25px #00ff99;width:500px}
+    h2{text-align:center;color:#00ffaa;margin:0 0 16px}
+    input,select{width:100%;margin-bottom:12px;padding:10px;background:#000;color:#00ff99;border:1px solid #00ff99;border-radius:8px}
+    button{width:100%;padding:12px;border:none;border-radius:8px;background:#00ffaa;color:#002;font-weight:700;cursor:pointer}
+    a{display:block;text-align:center;margin-top:10px;color:#00ffaa;text-decoration:none}
+  </style>
+</head>
+<body>
+  <form method="POST">
+    <h2>ADD NEW STATION</h2>
+    <input name="name" placeholder="Station Name" required>
+    <input name="location" placeholder="Location" required>
+    <input name="contact" placeholder="Contact Number" maxlength="10" required>
+    <select name="dept" required>
+      <option value="">Select Department</option>
+      {% for d in departments %}
+        <option value="{{ d.Dept_ID }}">{{ d.DepartmentType }}</option>
+      {% endfor %}
+    </select>
+    <select name="incharge">
+      <option value="">In-Charge Officer (optional)</option>
+      {% for o in officers %}
+        <option value="{{ o.PoliceID }}">{{ o.PoliceName }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Add Station</button>
+    <a href="{{ url_for('stations_page') }}">← Back to Stations</a>
+  </form>
+</body>
+</html>
